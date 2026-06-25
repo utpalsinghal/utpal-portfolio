@@ -1,0 +1,28 @@
+---
+import { projects } from '../data/projects';
+---
+{projects.length > 0 && (
+  <section class="block wrap" id="projects">
+    <div class="section-label">ls ./projects</div>
+    <h2 class="section-title">Selected work</h2>
+    <div class="proj-grid">
+      {projects.map((p, i) => (
+        <div class="pcard">
+          <div class="idx">{String(i + 1).padStart(2, '0')} / project</div>
+          <h4>{p.title}</h4>
+          <p>{p.blurb}</p>
+          <div class="tag-row">
+            {p.tags.map((t) => <span class="tag">{t}</span>)}
+          </div>
+          {p.links && (
+            <div class="links">
+              {p.links.map((l) => (
+                <a href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+)}

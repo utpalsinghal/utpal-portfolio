@@ -1,0 +1,24 @@
+---
+import { experience } from '../data/experience';
+---
+<section class="block wrap" id="experience">
+  <div class="section-label">cat experience.log</div>
+  <h2 class="section-title">Experience</h2>
+  <div class="timeline">
+    {experience.map((r) => (
+      <div class="tl-item">
+        <div class="tl-date">{r.date}</div>
+        <div class="tl-role">{r.role}</div>
+        <div class="tl-co">
+          {r.company} <span class="sep">·</span> {r.location}
+          {r.note && (<><span class="sep">·</span> <span class="dim">{r.note}</span></>)}
+        </div>
+        {r.points && (
+          <ul class="tl-points">
+            {r.points.map((p) => <li set:html={p} />)}
+          </ul>
+        )}
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,140 @@
+---
+// Interactive terminal. The command set lives in the client script below;
+// add a command by adding a key to the `commands` object.
+---
+<div class="term" id="terminal">
+  <div class="term-bar">
+    <span class="dot" style="background:#D9695F"></span>
+    <span class="dot" style="background:#E6A639"></span>
+    <span class="dot" style="background:#6FB58A"></span>
+    <span class="term-title">utpal@portfolio — zsh</span>
+  </div>
+  <div class="term-body" id="term-body" tabindex="-1">
+    <div class="term-line"><span class="out">Last login — welcome. Type </span><span class="key">help</span><span class="out"> to explore.</span></div>
+    <div class="term-input-row" id="input-row">
+      <span class="prompt">~ $</span>
+      <label class="sr-only" for="term-input">Terminal command input</label>
+      <input id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command input" />
+    </div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('term-input') as HTMLInputElement;
+  const body = document.getElementById('term-body') as HTMLElement;
+  const inputRow = document.getElementById('input-row') as HTMLElement;
+  const history: string[] = [];
+  let histIdx = -1;
+
+  function esc(s: string) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  const commands: Record<string, () => string[] | '__CLEAR__'> = {
+    help: () => [
+      '<span class="out">available commands:</span>',
+      '  <span class="key">whoami</span>      <span class="out">— who I am</span>',
+      '  <span class="key">experience</span>  <span class="out">— where I\'ve worked</span>',
+      '  <span class="key">skills</span>      <span class="out">— what I work with</span>',
+      '  <span class="key">github</span>      <span class="out">— my GitHub profile</span>',
+      '  <span class="key">linkedin</span>    <span class="out">— my LinkedIn profile</span>',
+      '  <span class="key">contact</span>     <span class="out">— how to reach me</span>',
+      '  <span class="key">resume</span>      <span class="out">— open my résumé</span>',
+      '  <span class="key">clear</span>       <span class="out">— clear the screen</span>',
+    ],
+    whoami: () => [
+      '<span class="out">Utpal Singhal — Senior Software Engineer @ Navex</span><br/><br/>',
+      '<span class="out">5+ years building developer-productivity tooling, AI-assisted workflows, and large-scale modernization.</span>',
+      '<span class="out">I build software that makes software teams faster.</span>',
+    ],
+    experience: () => [
+      '<span class="key">Navex</span>          <span class="out">Senior Software Engineer · May 2024 — Present</span>',
+      '<span class="key">GlobalLogic</span>    <span class="out">Software Engineer · Mar 2024 — Apr 2024</span>',
+      '<span class="key">Accenture</span>      <span class="out">App Dev Analyst · Aug 2021 — Mar 2024</span>',
+      '<span class="key">Bosch</span>          <span class="out">Project Intern · Mar 2021 — Jun 2021</span>',
+      '<span class="out">→ full detail at </span><a href="#experience">#experience</a>',
+    ],
+    skills: () => [
+      '<span class="key">languages</span>  <span class="out">C#, JavaScript, SQL, HTML/CSS</span>',
+      '<span class="key">backend</span>    <span class="out">ASP.NET Core, Web API, MVC, REST</span>',
+      '<span class="key">frontend</span>   <span class="out">React (JS/TS), Redux</span>',
+      '<span class="key">data</span>       <span class="out">SQL Server, PostgreSQL, MySQL</span>',
+      '<span class="key">cloud</span>      <span class="out">Azure, AWS, Git, LaunchDarkly</span>',
+      '<span class="key">ai</span>         <span class="out">prompt engineering, agentic workflows</span>',
+    ],
+    contact: () => [
+      '<span class="key">email</span>     <a href="mailto:utpal.singhal499@gmail.com">utpal.singhal499@gmail.com</a>',
+      '<span class="key">linkedin</span>  <a href="https://www.linkedin.com/in/utpalsinghal" target="_blank" rel="noopener">linkedin.com/in/utpalsinghal</a>',
+      '<span class="ok">✓ Let\'s connect</span>',
+    ],
+    github: () => ['<span class="out">→ </span><a href="https://github.com/utpalsinghal" target="_blank" rel="noopener">github.com/utpalsinghal</a>'],
+    linkedin: () => ['<span class="out">→ </span><a href="https://www.linkedin.com/in/utpalsinghal" target="_blank" rel="noopener">linkedin.com/in/utpalsinghal</a>'],
+    resume: () => ['<span class="out">opening résumé… </span><a href="/resume.pdf" target="_blank" rel="noopener">Utpal_Singhal_Resume.pdf</a>'],
+    clear: () => '__CLEAR__',
+  };
+
+  function write(html: string) {
+    const line = document.createElement('div');
+    line.className = 'term-line';
+    line.innerHTML = html;
+    body.insertBefore(line, inputRow);
+  }
+
+  function run(raw: string) {
+    const cmd = raw.trim().toLowerCase();
+    write('<span class="prompt">~ $</span> <span class="cmd">' + esc(raw) + '</span>');
+    if (cmd === '') {
+      /* no-op */
+    } else if (commands[cmd]) {
+      const out = commands[cmd]();
+      if (out === '__CLEAR__') {
+        body.querySelectorAll('.term-line').forEach((l) => l.remove());
+      } else {
+        out.forEach((l) => write(l));
+        if (cmd === 'resume') setTimeout(() => window.open('/resume.pdf', '_blank', 'noopener,noreferrer'), 600);
+      }
+    } else {
+      write('<span class="err">command not found: ' + esc(cmd) + '</span> <span class="out">— try </span><span class="key">help</span>');
+    }
+    body.scrollTop = body.scrollHeight;
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const v = input.value;
+      if (v.trim() !== '') history.unshift(v);
+      histIdx = -1;
+      run(v);
+      input.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx < history.length - 1) {
+        histIdx++;
+        input.value = history[histIdx];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx > 0) {
+        histIdx--;
+        input.value = history[histIdx];
+      } else {
+        histIdx = -1;
+        input.value = '';
+      }
+    }
+  });
+
+  body.addEventListener('click', () => input.focus());
+
+  const resumeBtn = document.getElementById('resume-btn');
+  if (resumeBtn) {
+    resumeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      run('resume');
+      document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
+    });
+  }
+</script>

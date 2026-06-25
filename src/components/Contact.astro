@@ -1,0 +1,23 @@
+---
+---
+<section class="block wrap" id="contact">
+  <div class="section-label">./contact.sh</div>
+  <h2 class="section-title">Get in touch</h2>
+  <div class="contact-card">
+    <p class="contact-lead">Let's connect.</p>
+    <p class="contact-sub">Got a problem worth solving, or an idea worth exploring? My inbox is open.</p>
+    <div class="contact-actions">
+      <button class="btn btn-primary" id="email-btn">Copy email</button>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/utpalsinghal" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const emailBtn = document.getElementById('email-btn') as HTMLButtonElement;
+  emailBtn?.addEventListener('click', () => {
+    navigator.clipboard?.writeText('utpal.singhal499@gmail.com').catch(() => {});
+    emailBtn.textContent = 'Copied ✓';
+    setTimeout(() => { emailBtn.textContent = 'Copy email'; }, 1600);
+  });
+</script>

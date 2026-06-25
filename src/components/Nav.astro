@@ -1,0 +1,19 @@
+---
+const links = [
+  { href: '#experience', label: 'experience' },
+  { href: '#skills', label: 'skills' },
+  { href: '#about', label: 'about' },
+  { href: '#contact', label: 'contact' },
+];
+---
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top"><span class="amber">utpal</span><span class="dim">@</span>singhal<span class="dim">:~$</span></a>
+    <div class="nav-right">
+      <nav class="topnav">
+        {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      </nav>
+      <a class="btn btn-sm btn-primary" href="/resume.pdf" id="resume-btn">résumé ↓</a>
+    </div>
+  </div>
+</div>

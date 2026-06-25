@@ -1,0 +1,17 @@
+---
+import { skills } from '../data/skills';
+---
+<section class="block wrap" id="skills">
+  <div class="section-label">ls ./skills</div>
+  <h2 class="section-title">Skills</h2>
+  <div class="skills-grid">
+    {skills.map((g) => (
+      <div class="skill-group">
+        <div class="sg-label">{g.label}</div>
+        <div class="tag-row">
+          {g.items.map((s) => <span class="tag">{s}</span>)}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
